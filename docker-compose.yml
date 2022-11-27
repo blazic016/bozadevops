@@ -1,0 +1,53 @@
+version: '3'
+services:
+
+  nginx:
+    image: nginx:stable
+    container_name: bozaweb
+    # build: 
+    #   context: nginx
+    ports:
+      - 8080:80
+    volumes:
+      - $PWD/web:/usr/share/nginx/html:ro
+      # - $PWD/nginx/volume:/
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: 
+      - net
+
+  mysql:
+    image: mysql:8.0
+    container_name: bozamysql
+    # build: 
+    #   context: mysql
+    # volumes:
+    #    - $PWD/mysql/volume:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=boza
+      - MYSQL_DATABASE=boza
+      - MYSQL_DATABASE=bozadb
+      - MYSQL_USER=boza
+      - MYSQL_PASSWORD=boza
+    restart: always
+    ports:
+      - '3306:3306'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  ubuntu20:
+    image: ubuntu20-custom-image:1.0
+    container_name: bozaubuntu
+    build:
+      context: ubuntu20-custom
+    volumes:
+       - $PWD/ubuntu20-custom/volume:/home/user/volume
+    environment:
+      - LOCAL_USER_ID=1000
+    tty: true
+
+    networks:
+      - net
+networks:
+  net:
